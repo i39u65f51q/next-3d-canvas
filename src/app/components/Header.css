@@ -1,0 +1,11 @@
+.header {
+  margin: var(--header-m-y) 0px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+}

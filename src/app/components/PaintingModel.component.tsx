@@ -1,0 +1,56 @@
+import { Canvas } from '@react-three/fiber'
+import { Suspense, useLayoutEffect, useRef, useState } from 'react'
+import { Texture, TextureLoader } from 'three'
+import { OrbitControls, Environment, ContactShadows } from '@react-three/drei'
+
+export default function PaintingModel(props: {
+  imgUrl: string | undefined
+  canvas: HTMLCanvasElement | undefined
+}): JSX.Element {
+  const { imgUrl } = props
+  const [texture, setTexture] = useState<Texture>(new Texture())
+  const loader: TextureLoader = new TextureLoader()
+  const materialRef = useRef<any>()
+
+  useLayoutEffect(() => {
+    if (!imgUrl || imgUrl === '') return
+    loader.load(
+      imgUrl,
+      (texture) => {
+        if (materialRef.current) {
+          //console.log('t', texture)
+          setTexture(texture)
+        }
+      },
+      (event: ProgressEvent) => console.log('progress', event),
+      (err) => console.error(err)
+    )
+  }, [imgUrl])
+
+  return (
+    <Canvas shadows>
+      <OrbitControls />
+      <Suspense>
+        <mesh>
+          <boxGeometry args={[3, 3, 3]} />
+          <meshBasicMaterial
+            ref={materialRef}
+            map={texture}
+            toneMapped={false}
+            onUpdate={(self) => (self.needsUpdate = true)}
+          />
+        </mesh>
+      </Suspense>
+      <Environment preset="sunset" />
+      <ContactShadows
+        position={[0, -2, 0]}
+        opacity={0.5}
+        scale={10}
+        blur={1}
+        far={10}
+        resolution={256}
+        color="#000"
+      />
+    </Canvas>
+  )
+}
