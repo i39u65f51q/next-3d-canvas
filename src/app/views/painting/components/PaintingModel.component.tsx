@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import { Suspense, useLayoutEffect, useRef, useState } from 'react'
-import { Texture, TextureLoader } from 'three'
+import { Color, Texture, TextureLoader } from 'three'
 import { OrbitControls, Environment, ContactShadows } from '@react-three/drei'
 
 export default function PaintingModel(props: {
@@ -29,14 +29,20 @@ export default function PaintingModel(props: {
 
   return (
     <Canvas shadows>
+      {/* Scene color */}
+      <color
+        attach="background"
+        args={[new Color('#fff').r, new Color('#fff').g, new Color('#fff').b]}
+      />
       <OrbitControls />
       <Suspense>
         <mesh>
           <boxGeometry args={[3, 3, 3]} />
           <meshBasicMaterial
+            color="rgb(255,255,255)"
             ref={materialRef}
             map={texture}
-            toneMapped={false}
+            // toneMapped={false}
             onUpdate={(self) => (self.needsUpdate = true)}
           />
         </mesh>

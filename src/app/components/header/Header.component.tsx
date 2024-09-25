@@ -8,6 +8,7 @@ export default function Header(props: {}): JSX.Element {
       <nav>
         <Link href="/views/modeling">建模</Link>
         <Link href="/views/painting">繪畫</Link>
+        <Link href="/views/painting-ai">繪畫AI</Link>
         <Link href="/views/display">展示</Link>
       </nav>
     </header>
