@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap');
+@import './tailwind.css';
 
 :root {
   --bg-primary: #d5dee7f8;
