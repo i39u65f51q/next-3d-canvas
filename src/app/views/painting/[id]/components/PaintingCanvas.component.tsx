@@ -4,12 +4,10 @@ import { SyntheticEvent, useEffect, useRef, useState } from 'react'
 export default function PaintingCanvas(props: {
   setImgUrl: React.Dispatch<React.SetStateAction<string | undefined>>
   setCanvas: React.Dispatch<React.SetStateAction<HTMLCanvasElement | undefined>>
+  color: string
 }): JSX.Element {
   const [isDrawing, setIsDrawing] = useState<boolean>(false)
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null)
-  const [color, setColor] = useState<
-    'black' | 'red' | 'green' | 'yellow' | 'white'
-  >()
 
   const canvasRef: React.MutableRefObject<null | HTMLCanvasElement> =
     useRef(null)
@@ -63,17 +61,16 @@ export default function PaintingCanvas(props: {
     if (!context || !canvasRef.current) return
     context.lineCap = 'round'
     context.lineWidth = 2
-    setColor('white')
   }, [context])
 
   useEffect(() => {
-    if (!context || !color) return
-    context.strokeStyle = color
-  }, [color])
+    if (!context || !props.color) return
+    context.strokeStyle = props.color
+  }, [props.color, context])
 
   return (
     <canvas
-      style={{ backgroundColor: '#ddd' }}
+      style={{ backgroundColor: '#EFEFEF' }}
       ref={canvasRef}
       onMouseDown={start}
       onMouseUp={end}

@@ -5,16 +5,20 @@ import PaintingModel from '@/app/views/painting/[id]/components/PaintingModel.co
 import { use, useEffect, useState } from 'react'
 import { CardWrap, Container, Card, ModelHeader, ModelWrap } from './style'
 import { useParams, useRouter } from 'next/navigation'
+<<<<<<< HEAD
 import { Socket, io } from 'socket.io-client'
 
 let socket: Socket
+=======
+import { Button } from '@mui/material'
+import { ColorResult, SketchPicker } from 'react-color'
+>>>>>>> 6daf6673018783024aa52b3dd7cb289ac0777a5c
 
 export default function PaintingView(props: {}): JSX.Element {
   const [imgUrl, setImgUrl] = useState<string>()
   const [canvas, setCanvas] = useState<HTMLCanvasElement>()
-
-  const router = useRouter()
-
+  const [color, setColor] = useState<string>('#fff')
+  const [onSelectedColor, setOnSelectedColor] = useState(false)
   const params = useParams()
 
   useEffect(() => {
@@ -34,23 +38,50 @@ export default function PaintingView(props: {}): JSX.Element {
     }
   }, [])
 
+  function onSelectColor(newColor: ColorResult): void {
+    setColor(newColor.hex)
+  }
+
+  function handleColorPicker(): void {
+    setOnSelectedColor(!onSelectedColor)
+  }
+
+  function clear(): void {}
+
   return (
     <main>
       <div style={ModelHeader}>
-        Select Models
-        <div style={ModelWrap}>Models</div>
+        <div style={ModelWrap} className="flex justify-end relative">
+          <Button variant="contained" size="small" onClick={handleColorPicker}>
+            {onSelectedColor ? '完成' : '選擇顏色'}
+          </Button>
+          <Button variant="" onClick={clear}>
+            清除
+          </Button>
+          {onSelectedColor && (
+            <SketchPicker
+              className="absolute top-12 right-16"
+              color={color}
+              onChangeComplete={onSelectColor}
+            />
+          )}
+        </div>
       </div>
       <div style={Container}>
         <div style={CardWrap}>
-          Model-View
+          展示區域
           <div style={Card}>
             <PaintingModel imgUrl={imgUrl} canvas={canvas} />
           </div>
         </div>
         <div style={CardWrap}>
-          Canvas-View
+          創作區域
           <div style={Card}>
-            <PaintingCanvas setImgUrl={setImgUrl} setCanvas={setCanvas} />
+            <PaintingCanvas
+              setImgUrl={setImgUrl}
+              setCanvas={setCanvas}
+              color={color}
+            />
           </div>
         </div>
       </div>

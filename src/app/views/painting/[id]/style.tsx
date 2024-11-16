@@ -4,19 +4,18 @@ export const Container: CSSProperties = {
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
   gap: '0.5rem',
-  height: '80%',
+  height: '93%',
   marginTop: '5px',
 }
 
 export const ModelHeader: CSSProperties = {
-  height: '20%',
+  height: '7%',
   width: '100%',
 }
 
 export const ModelWrap: CSSProperties = {
   width: '100%',
   height: '100%',
-  border: '1px solid black',
 }
 
 export const CardWrap: CSSProperties = {
@@ -25,5 +24,5 @@ export const CardWrap: CSSProperties = {
 
 export const Card: CSSProperties = {
   height: 'calc(100% - 30px)',
-  border: ' 1px solid black',
+  border: ' 1px solid #ddd',
 }
