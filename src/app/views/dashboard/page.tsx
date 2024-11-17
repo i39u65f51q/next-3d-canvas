@@ -1,4 +1,5 @@
 'use client'
+import useAuth from '@/app/store/auth'
 import { basicModal } from '@/app/styles/style'
 import {
   Avatar,
@@ -9,24 +10,24 @@ import {
   MenuItem,
   Modal,
   Select,
+  Snackbar,
   Stack,
   TextField,
 } from '@mui/material'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-/* TODO:
-
-頁面功能：
-1. 加入畫室
-2. 建立畫室
-3. 瀏覽畫室
-
-*/
-
 export default function DashboardView() {
+  const auth = useAuth()
   const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [snackbarState, setSnackbarState] = useState<{
+    open: boolean
+    message: string
+  }>({
+    open: false,
+    message: '',
+  })
   const [newName, setNewName] = useState<string>('')
   const [selectedModal, setSelectedModal] = useState<number>(1)
   const [roomList, setRoomList] = useState([
@@ -63,8 +64,8 @@ export default function DashboardView() {
         name: newName,
         modelId: 1,
         imgId: 1,
-        members: [{ id: 1, name: 'Alan' }],
-        owner: { id: 1, name: 'Alan' },
+        members: [{ id: 1, name: auth.name }],
+        owner: { id: 1, name: auth.name },
       },
     ])
     handleModalClose()
@@ -72,7 +73,6 @@ export default function DashboardView() {
 
   // 加入房間
   function joinRoom(roomId: number): void {
-    console.log('join', roomId)
     router.push(`/views/painting/${roomId}`)
   }
 
@@ -94,8 +94,31 @@ export default function DashboardView() {
     setSelectedModal(event.target.value)
   }
 
+  function closeSnackBar(): void {
+    setSnackbarState({ ...snackbarState, open: false, message: '' })
+  }
+  useEffect(() => {
+    if (!auth.name) {
+      router.push('/views/login')
+      return
+    }
+
+    setSnackbarState({
+      open: true,
+      message: `登入成功：歡迎 ${auth.name} 加入虛擬畫布平台`,
+    })
+  }, [])
+
   return (
     <main>
+      <Snackbar
+        open={snackbarState.open}
+        message={snackbarState.message}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        onClose={closeSnackBar}
+        autoHideDuration={2000}
+        key="dashboard-snackbar"
+      />
       <Modal open={open} onClose={handleModalClose}>
         <Box className="bg-white" sx={{ ...basicModal }}>
           <h2 className="text-xl">建立畫室</h2>
@@ -112,7 +135,11 @@ export default function DashboardView() {
                 value={selectedModal}
               >
                 {modalOptions.map((option) => {
-                  return <MenuItem value={option.value}>{option.name}</MenuItem>
+                  return (
+                    <MenuItem value={option.value} key={option.name}>
+                      {option.name}
+                    </MenuItem>
+                  )
                 })}
               </Select>
             </div>

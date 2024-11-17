@@ -1,3 +1,4 @@
+import { WsSocket } from '@/app/class/WsSocket'
 import { get } from 'lodash'
 import { SyntheticEvent, useEffect, useRef, useState } from 'react'
 
@@ -5,6 +6,7 @@ export default function PaintingCanvas(props: {
   setImgUrl: React.Dispatch<React.SetStateAction<string | undefined>>
   setCanvas: React.Dispatch<React.SetStateAction<HTMLCanvasElement | undefined>>
   color: string
+  imgUrl: string | undefined
 }): JSX.Element {
   const [isDrawing, setIsDrawing] = useState<boolean>(false)
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null)
@@ -36,13 +38,14 @@ export default function PaintingCanvas(props: {
 
   function saveToUrl() {
     if (!canvasRef.current || !context) return
-    props.setImgUrl(canvasRef.current.toDataURL())
+    const url = canvasRef.current.toDataURL()
+    props.setImgUrl(url)
     // canvasRef.current.toBlob((blob) => {
     //   if (!blob) return
     //   const url: string = URL.createObjectURL(blob)
     //   props.setImgUrl(url)
-    //   URL.revokeObjectURL(url)
     // })
+    URL.revokeObjectURL(url)
   }
 
   useEffect(() => {
@@ -67,6 +70,15 @@ export default function PaintingCanvas(props: {
     if (!context || !props.color) return
     context.strokeStyle = props.color
   }, [props.color, context])
+
+  useEffect(() => {
+    if (!context || !props.imgUrl) return
+    const image = new Image()
+    image.src = props.imgUrl
+    image.onload = () => {
+      context.drawImage(image, 0, 0)
+    }
+  }, [props.imgUrl])
 
   return (
     <canvas
