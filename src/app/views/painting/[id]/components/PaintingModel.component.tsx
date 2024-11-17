@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber'
-import { Suspense, useLayoutEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Color, Texture, TextureLoader } from 'three'
 import { OrbitControls, Environment, ContactShadows } from '@react-three/drei'
 
@@ -12,15 +12,14 @@ export default function PaintingModel(props: {
   const loader: TextureLoader = new TextureLoader()
   const materialRef = useRef<any>()
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!imgUrl || imgUrl === '') return
     loader.load(
       imgUrl,
       (texture) => {
-        if (materialRef.current) {
-          //console.log('t', texture)
-          setTexture(texture)
-        }
+        // if (materialRef.current) {
+        setTexture(texture)
+        // }
       },
       (event: ProgressEvent) => console.log('progress', event),
       (err) => console.error(err)
