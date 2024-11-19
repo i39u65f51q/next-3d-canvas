@@ -45,7 +45,7 @@ export default function PaintingCanvas(props: {
     //   const url: string = URL.createObjectURL(blob)
     //   props.setImgUrl(url)
     // })
-    URL.revokeObjectURL(url)
+    // URL.revokeObjectURL(url)
   }
 
   useEffect(() => {

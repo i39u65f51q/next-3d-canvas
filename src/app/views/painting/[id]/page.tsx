@@ -2,7 +2,7 @@
 
 import PaintingCanvas from '@/app/views/painting/[id]/components/PaintingCanvas.component'
 import PaintingModel from '@/app/views/painting/[id]/components/PaintingModel.component'
-import { use, useEffect, useState } from 'react'
+import { use, useCallback, useEffect, useState } from 'react'
 import { CardWrap, Container, Card, ModelHeader, ModelWrap } from './style'
 import { useParams, useRouter } from 'next/navigation'
 import { Socket, io } from 'socket.io-client'
@@ -10,6 +10,7 @@ import { Avatar, AvatarGroup, Button, Snackbar } from '@mui/material'
 import { ColorResult, SketchPicker } from 'react-color'
 import { WsSocket } from '@/app/class/WsSocket'
 import useAuth from '@/app/store/auth'
+import { debounce } from 'lodash'
 
 export default function PaintingView(props: {}): JSX.Element {
   const auth = useAuth()
@@ -48,7 +49,10 @@ export default function PaintingView(props: {}): JSX.Element {
     const roomId = params.id
     console.log('roomId', roomId)
 
-    setSocket(io('http://localhost:3200'))
+    setSocket(
+      // io('http://ec2-54-250-164-109.ap-northeast-1.compute.amazonaws.com:3200')
+      io('http://localhost:3200')
+    )
 
     return () => {
       if (socket && socket.connected) socket.disconnect()
@@ -57,6 +61,7 @@ export default function PaintingView(props: {}): JSX.Element {
 
   useEffect(() => {
     if (!socket) return
+    console.log('socket', socket)
 
     socket.on('connect', () => {
       console.log('connected', socket)
@@ -73,13 +78,31 @@ export default function PaintingView(props: {}): JSX.Element {
         setImgUrl(imgUrl)
       })
     })
+    return () => {
+      socket.disconnect()
+    }
   }, [socket])
 
+  const emitResult = useCallback(
+    debounce((socket: Socket, imgUrl) => {
+      // Simulate an API call
+      setTimeout(() => {
+        socket.emit('paint', imgUrl)
+      }, 300)
+    }, 300), // 500ms debounce
+    []
+  )
+
+  // useEffect to watch for searchTerm changes
   useEffect(() => {
-    if (!socket) return
-    // debounce(() => socket.emit('paint', imgUrl), 300)
-    socket.emit('paint', imgUrl)
-  }, [imgUrl])
+    if (socket) {
+      emitResult(socket, imgUrl)
+    }
+    // Cleanup the debounce on unmount
+    return () => {
+      emitResult.cancel()
+    }
+  }, [imgUrl, emitResult])
 
   function onSelectColor(newColor: ColorResult): void {
     setColor(newColor.hex)
