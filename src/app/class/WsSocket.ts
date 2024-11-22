@@ -18,10 +18,12 @@ export namespace WsSocket {
     public readonly name: string
     public readonly members: string[]
     public readonly img: string
+    public readonly aiImgs: string[]
     constructor(payload: unknown) {
       this.name = get(payload, 'name', '')
       this.members = get(payload, 'members', [])
       this.img = get(payload, 'img', '')
+      this.aiImgs = get(payload, 'aiImgs', [])
     }
   }
 

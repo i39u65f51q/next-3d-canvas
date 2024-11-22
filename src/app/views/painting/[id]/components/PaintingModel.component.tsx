@@ -8,16 +8,22 @@ export default function PaintingModel(props: {
   canvas: HTMLCanvasElement | undefined
 }): JSX.Element {
   const { imgUrl } = props
-  const [texture, setTexture] = useState<Texture>(new Texture())
+  const [texture, setTexture] = useState<Texture | null>(new Texture())
+  const [color, setColor] = useState<'black' | 'white'>('black')
   const loader: TextureLoader = new TextureLoader()
   const materialRef = useRef<any>()
 
   useEffect(() => {
-    if (!imgUrl || imgUrl === '') return
+    if (!imgUrl || imgUrl === '') {
+      setTexture(null)
+      setColor('black')
+      return
+    }
     loader.load(
-      imgUrl,
+      imgUrl as string,
       (texture) => {
         // if (materialRef.current) {
+        setColor('white')
         setTexture(texture)
         // }
       },
@@ -38,7 +44,7 @@ export default function PaintingModel(props: {
         <mesh>
           <boxGeometry args={[3, 3, 3]} />
           <meshBasicMaterial
-            color="rgb(255,255,255)"
+            color={color}
             ref={materialRef}
             map={texture}
             // toneMapped={false}

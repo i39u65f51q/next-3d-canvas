@@ -7,6 +7,7 @@ export default function PaintingCanvas(props: {
   setCanvas: React.Dispatch<React.SetStateAction<HTMLCanvasElement | undefined>>
   color: string
   imgUrl: string | undefined
+  aiImgUrl: string
 }): JSX.Element {
   const [isDrawing, setIsDrawing] = useState<boolean>(false)
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null)
@@ -72,13 +73,27 @@ export default function PaintingCanvas(props: {
   }, [props.color, context])
 
   useEffect(() => {
-    if (!context || !props.imgUrl) return
+    if (!context) return
+    if (props.imgUrl === '' || !props.imgUrl) {
+      context.clearRect(0, 0, 5000, 5000)
+      return
+    }
     const image = new Image()
     image.src = props.imgUrl
     image.onload = () => {
       context.drawImage(image, 0, 0)
     }
   }, [props.imgUrl])
+
+  // FIXME:
+  useEffect(() => {
+    if (!context || !props.aiImgUrl) return
+    const img = new Image()
+    img.src = props.aiImgUrl
+    img.onload = () => {
+      context.drawImage(img, 0, 0)
+    }
+  }, [props.aiImgUrl])
 
   return (
     <canvas
